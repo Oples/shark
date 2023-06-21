@@ -1,0 +1,5 @@
+@import './base.css';
+
+#app {
+    @apply bg-blue-950;
+}

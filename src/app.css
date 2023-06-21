@@ -1,0 +1,10 @@
+.bg-pic-anim {
+    @apply translate-y-1/4 rotate-[20deg] translate-x-1/4;
+    animation-name: surf-anim;
+    animation-duration: 6s;
+}
+
+@keyframes surf-anim {
+    0% {transform: translateY(25%) rotate(20deg)};
+    100% {transform: translateY(25%) rotate(10deg)};
+}
