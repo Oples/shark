@@ -1,0 +1,16 @@
+.bg-pic-anim {
+  @apply translate-y-1/4 rotate-[20deg] translate-x-1/4;
+  animation-name: surf-anim;
+  animation-duration: 6s;
+}
+
+@keyframes surf-anim {
+  0% {transform: translateY(25%) rotate(20deg)};
+  100% {transform: translateY(25%) rotate(10deg)};
+}
+
+.bg-main {
+  background: radial-gradient(circle at top left,transparent 25%,#1968e782 25.5%, #1968e782 36%, transparent 37%, transparent 100%),radial-gradient(circle at bottom right,transparent 34%,#1968e782 34.5%, #1968e782 45.5%, transparent 46%, transparent 100%);
+  background-image: url('./assets/pic/shark-fur_1024x1024.webp');
+  background-size: 14rem 14rem;
+}

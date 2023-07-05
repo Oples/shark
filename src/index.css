@@ -2,16 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
-html, body, #app { 
+html,
+body,
+#root {
     @apply w-full h-full;
-}
-
-#app {
-    @apply bg-sky-800 text-sky-100;
-}
-
-.bg-main {
-    background: radial-gradient(circle at top left,transparent 25%,#1968e782 25.5%, #1968e782 36%, transparent 37%, transparent 100%),radial-gradient(circle at bottom right,transparent 34%,#1968e782 34.5%, #1968e782 45.5%, transparent 46%, transparent 100%);
-    background-image: url('./assets/pic/shark-fur_1024x1024.webp');
-    background-size: 14rem 14rem;
 }
