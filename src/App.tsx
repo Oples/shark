@@ -1,17 +1,33 @@
-import bgImage from '/src/assets/pic/20230522_170011-clear.webp'
 import './App.css'
+import { RouterProvider, createBrowserRouter } from 'react-router-dom'
+import Home from './routes/home'
+import Credits from './routes/credits'
+import { ErrorBoundary } from 'react-error-boundary'
+import Post from './routes/post'
 
 function App() {
+    const router = createBrowserRouter([
+        {
+            path: '/',
+            element: <Home />,
+            errorElement: <div>Something went wrong</div>,
+        },
+        {
+            path: '/credits',
+            element: <Credits />,
+            errorElement: <ErrorBoundary fallback={<div>Something went wrong</div>} />,
+        },
+        {
+            path: '/post/:id',
+            element: <Post />,
+        },
+    ])
+
     return (
         <>
-            <main className="h-full flex items-center bg-main text-white">
-                <div className="text-2xl text-center bg-black/30 rounded-md max-w-md px-4 py-8 w-full mx-auto backdrop-blur-sm">
-                    Soon... 🦈
-                </div>
+            <main className="h-full flex items-center bg-main">
+                <RouterProvider router={router} />
             </main>
-            <div className="overflow-hidden absolute max-w-3xl bottom-0 right-0 pointer-events-none">
-                <img src={bgImage} className="bg-pic-anim" />
-            </div>
         </>
     )
 }

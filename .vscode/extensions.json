@@ -1,7 +1,6 @@
 {
     "recommendations": [
         "dbaeumer.vscode-eslint",
-        "csstools.postcss",
         "yoavbls.pretty-ts-errors",
         "esbenp.prettier-vscode",
         "bradlc.vscode-tailwindcss",
