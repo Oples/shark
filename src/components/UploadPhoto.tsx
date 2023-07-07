@@ -1,5 +1,5 @@
 import { BsCamera } from 'react-icons/bs'
-import Dropzone, { DropEvent, DropzoneOptions, FileRejection } from 'react-dropzone'
+import Dropzone, { DropEvent, FileRejection } from 'react-dropzone'
 import { useCallback } from 'react'
 
 function Upload() {

@@ -18,7 +18,7 @@ function Home() {
     }, [theme])
 
     return (
-        <div className="w-full relative h-screen overflow-auto scroll-auto flex flex-col bg-white text-black dark:bg-zinc-900 dark:text-white">
+        <div className="w-full relative min-h-screen overflow-auto self-start flex flex-col bg-white text-black dark:bg-zinc-900 dark:text-white">
             <div className="absolute right-0 top-0 p-4">
                 <div onClick={toggleTheme}>
                     {theme ? (
@@ -28,7 +28,7 @@ function Home() {
                     )}
                 </div>
             </div>
-            <div className="landscape:max-h-[42rem] portrait:max-h-[24rem] py-9 h-screen flex-shrink-0">
+            <div className="landscape:max-h-[42rem] portrait:max-h-[24rem] py-9 h-screen">
                 <Upload />
             </div>
             <div className="max-w-screen-md mx-auto flex-grow">

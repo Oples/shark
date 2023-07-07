@@ -1,29 +1,38 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import InfiniteScroll from 'react-infinite-scroller'
 import PostImage from './PostImage'
-
-export type BlahajPost = { href: string; horizontal?: boolean; src?: string }
+import { SharkPostImage } from '../../shark_back/bindings/SharkPostImage'
+import { useEffectOnce } from 'react-use'
 
 function Scroller({ ...props }) {
-    const [items, setItems] = useState([] as BlahajPost[])
+    const [items, setItems] = useState([] as SharkPostImage[])
     const [fetching, setFetching] = useState(false)
     const step = 20
     const [from, setFrom] = useState(0)
     const [to, setTo] = useState(step)
 
-    const loadItems = async (from: number, to: number): Promise<BlahajPost[]> => {
+    const loadItems = async (from: number, to: number): Promise<SharkPostImage[]> => {
+        console.log('from', from, 'to', to)
+
         return await new Promise((res) =>
             setTimeout(() => {
                 res(
-                    new Array(to - from)
-                        .fill(null)
-                        .map((_, index) => ({ href: '/post/' + (index + from) }))
+                    new Array(to - from).fill(null).map((_, index) => ({
+                        id: BigInt(from + index),
+                        img_url: '',
+                    }))
                 )
-            }, 10000)
+            }, 1000)
         )
     }
 
+    useEffectOnce(() => {
+        fetchItems()
+    })
+
     const fetchItems = useCallback(async () => {
+        console.log('fetching', from, to, fetching)
+
         if (fetching) {
             return
         }
@@ -53,8 +62,8 @@ function Scroller({ ...props }) {
     }, [items, fetching, from, to])
 
     const loader = (
-        <div key="loader" className="flex px-9 py-6 w-screen max-w-full" {...props}>
-            <PostImage item={{ href: '', src: '' }} skeleton={true} />
+        <div key="loader" className="flex px-9 py-6 w-full max-w-full" {...props}>
+            <PostImage item={{ id: BigInt(from), img_url: '' }} skeleton={true} />
         </div>
     )
 
@@ -68,7 +77,7 @@ function Scroller({ ...props }) {
         >
             <div className="flex flex-row flex-wrap gap-6 px-9">
                 {items.length > 0
-                    ? items.map((item) => <PostImage key={item.href} item={item} />)
+                    ? items.map((item) => <PostImage key={item.id.toString()} item={item} />)
                     : null}
             </div>
         </InfiniteScroll>
