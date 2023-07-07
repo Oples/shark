@@ -52,7 +52,7 @@ function Scroller({ ...props }) {
                 const randHorizontal = Math.random() > 0.7 && columnCursor % 2 === 0
                 columnCursor = randHorizontal ? 0 : columnCursor + 1
 
-                return { ...item, horizontal: true } // TODO: fix the horizontal split view
+                return { ...item, horizontal: randHorizontal } // TODO: fix the horizontal split view
             })
 
             setItems(allItems)
@@ -75,7 +75,7 @@ function Scroller({ ...props }) {
             className="w-full h-full pb-14"
             {...props}
         >
-            <div className="flex flex-row flex-wrap gap-6 px-9">
+            <div className="flex flex-row flex-wrap px-9 mx-4">
                 {items.length > 0
                     ? items.map((item) => <PostImage key={item.id.toString()} item={item} />)
                     : null}

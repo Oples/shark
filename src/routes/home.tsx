@@ -19,12 +19,12 @@ function Home() {
 
     return (
         <div className="w-full relative min-h-screen overflow-auto self-start flex flex-col bg-white text-black dark:bg-zinc-900 dark:text-white">
-            <div className="absolute right-0 top-0 p-4">
+            <div className="absolute right-0 top-0 p-4 text-3xl">
                 <div onClick={toggleTheme}>
                     {theme ? (
-                        <BsMoon className="text-3xl text-indigo-400" />
+                        <BsMoon className="text-indigo-300" />
                     ) : (
-                        <BsSun className="text-3xl text-cyan-700" />
+                        <BsSun className="text-cyan-700" />
                     )}
                 </div>
             </div>
