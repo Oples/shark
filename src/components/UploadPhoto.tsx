@@ -3,7 +3,7 @@ import Dropzone, { DropEvent, FileRejection } from 'react-dropzone'
 import { useCallback } from 'react'
 
 function Upload() {
-    const onDrop = useCallback((acceptedFiles: any, fileRej: FileRejection[], ev: DropEvent) => {
+    const onDrop = useCallback((acceptedFiles: any, _fileRej: FileRejection[], _ev: DropEvent) => {
         console.log(acceptedFiles)
     }, [])
 
