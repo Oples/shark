@@ -12,8 +12,6 @@ function Scroller({ ...props }) {
     const [to, setTo] = useState(step)
 
     const loadItems = async (from: number, to: number): Promise<SharkPostImage[]> => {
-        console.log('from', from, 'to', to)
-
         return await new Promise((res) =>
             setTimeout(() => {
                 res(
@@ -40,20 +38,21 @@ function Scroller({ ...props }) {
         setFetching(true)
 
         try {
-            const { issues } = {
+            let { issues } = {
                 issues: await loadItems(from, to),
             }
             setFrom(to)
             setTo(to + step)
 
-            let allItems = [...items, ...issues]
             let columnCursor = 0
-            allItems = allItems.map((item) => {
+            issues = issues.map((item) => {
                 const randHorizontal = Math.random() > 0.7 && columnCursor % 2 === 0
                 columnCursor = randHorizontal ? 0 : columnCursor + 1
 
                 return { ...item, horizontal: randHorizontal } // TODO: fix the horizontal split view
             })
+
+            const allItems = [...items, ...issues]
 
             setItems(allItems)
         } finally {
@@ -62,7 +61,7 @@ function Scroller({ ...props }) {
     }, [items, fetching, from, to])
 
     const loader = (
-        <div key="loader" className="flex px-9 py-6 w-full max-w-full" {...props}>
+        <div key="loader" className="flex py-6 w-full max-w-full" {...props}>
             <PostImage item={{ id: BigInt(from), img_url: '' }} skeleton={true} />
         </div>
     )
@@ -72,10 +71,10 @@ function Scroller({ ...props }) {
             loadMore={fetchItems}
             hasMore={true}
             loader={loader}
-            className="w-full h-full pb-14"
+            className="w-full h-full pb-14 pl-4"
             {...props}
         >
-            <div className="flex flex-row flex-wrap px-9 mx-4">
+            <div className="flex flex-row flex-wrap mx-4">
                 {items.length > 0
                     ? items.map((item) => <PostImage key={item.id.toString()} item={item} />)
                     : null}

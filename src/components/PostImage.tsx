@@ -1,8 +1,11 @@
 import bgImage from '../assets/pic/20230522_170011-clear.webp'
 import { SharkPostImage } from '../../shark_back/bindings/SharkPostImage'
+import { useNavigate } from 'react-router-dom'
 
 function PostImage(prop: { item: SharkPostImage & { horizontal?: boolean }; skeleton?: boolean }) {
     const post = prop.item
+    const post_url = `/post/${post.id.toString()}`
+    const navigate = useNavigate()
 
     return (
         <div
@@ -11,10 +14,15 @@ function PostImage(prop: { item: SharkPostImage & { horizontal?: boolean }; skel
             } sm:h-80 h-56 pr-4 pt-4`}
         >
             <a
-                href={`/post/${post.id.toString()}`}
+                href={post_url}
                 target="_blank"
                 rel="noopener"
                 className="w-full h-full rounded-md overflow-hidden"
+                onClick={(ev) => {
+                    ev.stopPropagation()
+                    ev.preventDefault()
+                    navigate(post_url)
+                }}
             >
                 <div
                     className={`${
