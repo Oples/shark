@@ -22,7 +22,7 @@ function Home() {
             <div className="absolute right-0 top-0 p-4 text-3xl">
                 <div onClick={toggleTheme}>
                     {theme ? (
-                        <BsMoon className="text-indigo-300" />
+                        <BsMoon className="text-cyan-200/80" />
                     ) : (
                         <BsSun className="text-cyan-700" />
                     )}

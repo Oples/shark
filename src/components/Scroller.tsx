@@ -1,23 +1,29 @@
 import { useCallback, useState } from 'react'
 import InfiniteScroll from 'react-infinite-scroller'
 import PostImage from './PostImage'
-import { SharkPostImage } from '../../shark_back/bindings/SharkPostImage'
+import { SharkPost } from '../../shark_back/bindings/SharkPost'
 import { useEffectOnce } from 'react-use'
 
 function Scroller({ ...props }) {
-    const [items, setItems] = useState([] as SharkPostImage[])
+    const [items, setItems] = useState([] as SharkPost[])
     const [fetching, setFetching] = useState(false)
     const step = 20
     const [from, setFrom] = useState(0)
     const [to, setTo] = useState(step)
 
-    const loadItems = async (from: number, to: number): Promise<SharkPostImage[]> => {
+    const loadItems = async (from: number, to: number): Promise<SharkPost[]> => {
         return await new Promise((res) =>
             setTimeout(() => {
                 res(
                     new Array(to - from).fill(null).map((_, index) => ({
                         id: BigInt(from + index),
+                        user_id: BigInt(0),
                         img_url: '',
+                        created_at: '',
+                        description: '',
+                        location: '',
+                        title: '',
+                        updated_at: '',
                     }))
                 )
             }, 1000)
@@ -61,8 +67,8 @@ function Scroller({ ...props }) {
     }, [items, fetching, from, to])
 
     const loader = (
-        <div key="loader" className="flex py-6 w-full max-w-full" {...props}>
-            <PostImage item={{ id: BigInt(from), img_url: '' }} skeleton={true} />
+        <div key="loader" className="flex pb-6 w-full max-w-full px-4" {...props}>
+            <PostImage skeleton />
         </div>
     )
 

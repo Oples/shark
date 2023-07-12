@@ -1,18 +1,17 @@
-use std::net::{Ipv4Addr, SocketAddr};
-
 use axum::{
     extract::Path,
     routing::{delete, get, patch, post, put},
     Json, Router,
 };
-use chrono::Utc;
+mod models;
+use models::{shark_comment, shark_post};
 use serde::{Deserialize, Serialize};
 use tower_http::cors::CorsLayer;
 use ts_rs::TS;
 
-#[derive(TS, Debug, Serialize, Deserialize)]
+#[derive(TS, Debug, Serialize, Deserialize, PartialEq)]
 #[ts(export)]
-struct SharkPost {
+pub struct SharkPost {
     id: u64,
     user_id: u64,
     img_url: String,
@@ -23,67 +22,41 @@ struct SharkPost {
     updated_at: String,
 }
 
-impl Default for SharkPost {
-    fn default() -> Self {
-        Self {
-            id: 1,
-            user_id: 1,
-            img_url: "https://picsum.photos/200/300".to_string(),
-            title: "test".to_string(),
-            location: "test".to_string(),
-            description: "test".to_string(),
-            created_at: Utc::now().to_string(),
-            updated_at: Utc::now().to_string(),
-        }
+async fn get_posts(param: Option<Path<(u64, u64)>>) -> Json<Vec<shark_post::Model>> {
+    let (id, size) = match param {
+        Some(Path(params)) => params,
+        None => (0, 10),
+    };
+
+    let mut posts: Vec<shark_post::Model> = Vec::new();
+    for p in 0..size {
+        posts.push(shark_post::Model {
+            id: id + p,
+            ..Default::default()
+        });
     }
-}
 
-#[derive(TS, Debug, Serialize, Deserialize)]
-#[ts(export)]
-struct SharkComment {
-    id: u64,
-    post_id: u64,
-    reply_to: u64,
-    user_ip: String,
-    content: String,
-    created_at: String,
-    updated_at: String,
-}
-
-impl Default for SharkComment {
-    fn default() -> Self {
-        Self {
-            id: 1,
-            post_id: 1,
-            reply_to: 1,
-            user_ip: Ipv4Addr::new(127, 0, 0, 1).to_string(),
-            content: "test".to_string(),
-            created_at: Utc::now().to_string(),
-            updated_at: Utc::now().to_string(),
-        }
-    }
-}
-
-async fn get_posts() -> Json<Vec<SharkPost>> {
-    let posts = vec![SharkPost::default()];
     return Json(posts);
 }
 
-async fn get_post(Path(id): Path<u64>) -> Json<SharkPost> {
-    let post = SharkPost {
+async fn get_post(Path(id): Path<u64>) -> Json<shark_post::Model> {
+    let post = shark_post::Model {
         id,
         ..Default::default()
     };
     return Json(post);
 }
 
-async fn get_comments(Path(id): Path<u64>) -> Json<Vec<SharkComment>> {
-    let comments = vec![SharkComment::default()];
+async fn get_comments(Path(id): Path<u64>) -> Json<Vec<shark_comment::Model>> {
+    let comments: Vec<shark_comment::Model> = vec![shark_comment::Model {
+        post_id: id,
+        ..Default::default()
+    }];
     return Json(comments);
 }
 
-async fn get_comment(Path(id): Path<u64>, Path(cid): Path<u64>) -> Json<SharkComment> {
-    let comment = SharkComment {
+async fn get_comment(Path(id): Path<u64>, Path(cid): Path<u64>) -> Json<shark_comment::Model> {
+    let comment: shark_comment::Model = shark_comment::Model {
         id: cid,
         post_id: id,
         ..Default::default()
@@ -91,17 +64,25 @@ async fn get_comment(Path(id): Path<u64>, Path(cid): Path<u64>) -> Json<SharkCom
     return Json(comment);
 }
 
+async fn delete_comment(Path(cid): Path<u64>) -> Json<bool> {
+    // let deleted = shark_comment::Entity::delete_by_id(cid).exec(db).await;
+    // return Json(deleted.is_ok());
+    return Json(true);
+}
+
 #[tokio::main]
 async fn main() {
     let app = Router::new()
         .route("/posts", get(get_posts))
+        .route("/posts/:id", get(get_posts))
+        .route("/posts/:id/:size", get(get_posts))
         .route("/post/:id", get(get_post))
-        .route("/posts/:id/comments", get(get_comments))
-        .route("/posts/:id/comments/:cid", get(get_comment))
-        // .route("/posts/:id/comments/:cid", post(post_comment))
-        // .route("/posts/:id/comments/:cid", delete(delete_comment))
-        // .route("/posts/:id/comments/:cid", put(put_comment))
-        // .route("/posts/:id/comments/:cid", patch(patch_comment))
+        .route("/post/:id/comments", get(get_comments))
+        .route("/post/:id/comment/:cid", get(get_comment))
+        // .route("/post/:id/comment/:cid", post(post_comment))
+        .route("/post/:id/comment/:cid", delete(delete_comment))
+        // .route("/post/:id/comment/:cid", put(put_comment))
+        // .route("/post/:id/comment/:cid", patch(patch_comment))
         .layer(CorsLayer::permissive());
 
     // Make the service available at http://localhost:8080
