@@ -11,5 +11,6 @@ export default defineConfig({
         __DEV__: process.env.NODE_ENV === 'development',
         __BUILD_TIME__: JSON.stringify(new Date().toISOString()),
         __BUILD_VERSION__: JSON.stringify(process.env.npm_package_version),
+        __BACKEND_ADDRESS__: JSON.stringify(process.env.VITE_BACKEND_ADDRESS),
     },
 })

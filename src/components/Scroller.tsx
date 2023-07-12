@@ -12,22 +12,11 @@ function Scroller({ ...props }) {
     const [to, setTo] = useState(step)
 
     const loadItems = async (from: number, to: number): Promise<SharkPost[]> => {
-        return await new Promise((res) =>
-            setTimeout(() => {
-                res(
-                    new Array(to - from).fill(null).map((_, index) => ({
-                        id: BigInt(from + index),
-                        user_id: BigInt(0),
-                        img_url: '',
-                        created_at: '',
-                        description: '',
-                        location: '',
-                        title: '',
-                        updated_at: '',
-                    }))
-                )
-            }, 1000)
+        const resp = await fetch(
+            `http://${import.meta.env.VITE_BACKEND_ADDRESS}/posts/${from}/${to - from}`
         )
+
+        return await resp.json()
     }
 
     useEffectOnce(() => {
@@ -35,8 +24,6 @@ function Scroller({ ...props }) {
     })
 
     const fetchItems = useCallback(async () => {
-        console.log('fetching', from, to, fetching)
-
         if (fetching) {
             return
         }
@@ -77,6 +64,7 @@ function Scroller({ ...props }) {
             loadMore={fetchItems}
             hasMore={true}
             loader={loader}
+            threshold={500}
             className="w-full h-full pb-14 pl-4"
             {...props}
         >
