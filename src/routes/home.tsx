@@ -28,10 +28,12 @@ function Home() {
                     )}
                 </div>
             </div>
-            <div className="landscape:max-h-[42rem] portrait:max-h-[24rem] py-9 h-screen">
-                <Upload />
+            <div className="landscape:max-h-[42rem] portrait:max-h-[24rem] py-9 h-[80vh] max-w-screen-lg w-full mx-auto">
+                <div className="aspect-square max-h-full mx-auto p-5">
+                    <Upload />
+                </div>
             </div>
-            <div className="max-w-screen-md mx-auto flex-grow">
+            <div className="max-w-screen-md w-full mx-auto flex-grow">
                 <Scroller />
             </div>
         </div>

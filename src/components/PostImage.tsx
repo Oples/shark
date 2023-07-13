@@ -37,7 +37,7 @@ function PostImage(prop: PostImageParams) {
             <a
                 target="_blank"
                 rel="noopener"
-                className="w-full h-full rounded-md overflow-hidden"
+                className="w-full h-full rounded-md overflow-hidden shadow-lg shadow-black/20 dark:shadow-black/60"
                 onClick={() => {
                     if (!prop.skeleton) navigate(post_url)
                 }}
@@ -49,7 +49,7 @@ function PostImage(prop: PostImageParams) {
                 >
                     <div
                         style={post_image_style}
-                        className="w-full h-full max-h-full aspect-auto m-auto bg-contain bg-center bg-no-repeat"
+                        className="w-full h-full max-h-full aspect-auto m-auto bg-cover bg-center bg-no-repeat"
                     />
                 </div>
             </a>
