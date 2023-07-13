@@ -12,11 +12,22 @@ function Scroller({ ...props }) {
     const [to, setTo] = useState(step)
 
     const loadItems = async (from: number, to: number): Promise<SharkPost[]> => {
-        const resp = await fetch(
-            `http://${import.meta.env.VITE_BACKEND_ADDRESS}/posts/${from}/${to - from}`
-        )
+        let result = []
 
-        return await resp.json()
+        try {
+            const resp = await fetch(
+                `${import.meta.env.VITE_BACKEND_SCHEMA}://${
+                    import.meta.env.VITE_BACKEND_ADDRESS
+                }/posts/${from}/${to - from}`
+            )
+            result = await resp.json()
+        } catch (e) {
+            console.error(e)
+            // wait before retry
+            await new Promise((resolve) => setTimeout(resolve, 1000))
+        }
+
+        return result
     }
 
     useEffectOnce(() => {
