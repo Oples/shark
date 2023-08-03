@@ -35,8 +35,7 @@ async fn get_posts(param: Option<Path<(u64, u64)>>) -> Json<Vec<shark_post::Mode
             ..Default::default()
         });
     }
-
-    return Json(posts);
+    Json(posts)
 }
 
 async fn get_post(Path(id): Path<u64>) -> Json<shark_post::Model> {
@@ -44,7 +43,7 @@ async fn get_post(Path(id): Path<u64>) -> Json<shark_post::Model> {
         id,
         ..Default::default()
     };
-    return Json(post);
+    Json(post)
 }
 
 async fn get_comments(Path(id): Path<u64>) -> Json<Vec<shark_comment::Model>> {
@@ -52,7 +51,7 @@ async fn get_comments(Path(id): Path<u64>) -> Json<Vec<shark_comment::Model>> {
         post_id: id,
         ..Default::default()
     }];
-    return Json(comments);
+    Json(comments)
 }
 
 async fn get_comment(Path(id): Path<u64>, Path(cid): Path<u64>) -> Json<shark_comment::Model> {
@@ -61,13 +60,13 @@ async fn get_comment(Path(id): Path<u64>, Path(cid): Path<u64>) -> Json<shark_co
         post_id: id,
         ..Default::default()
     };
-    return Json(comment);
+    Json(comment)
 }
 
 async fn delete_comment(Path(cid): Path<u64>) -> Json<bool> {
     // let deleted = shark_comment::Entity::delete_by_id(cid).exec(db).await;
     // return Json(deleted.is_ok());
-    return Json(true);
+    Json(true)
 }
 
 #[tokio::main]
