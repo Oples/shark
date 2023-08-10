@@ -1,7 +1,7 @@
+import { useEffect, useState } from 'react'
 import { BsMoon, BsSun } from 'react-icons/bs'
 import Scroller from '../components/Scroller'
 import Upload from '../components/UploadPhoto'
-import { useEffect, useState } from 'react'
 import { isDark } from '../utils/theme'
 
 function Home() {
@@ -18,7 +18,7 @@ function Home() {
     }, [theme])
 
     return (
-        <div className="w-full relative min-h-screen overflow-auto self-start flex flex-col bg-white text-black dark:bg-zinc-900 dark:text-white">
+        <div className="relative flex min-h-screen w-full flex-col self-start overflow-auto bg-white  text-zinc-900 dark:bg-zinc-900 dark:text-white">
             <div className="absolute right-0 top-0 p-4 text-3xl">
                 <div onClick={toggleTheme}>
                     {theme ? (
@@ -28,12 +28,12 @@ function Home() {
                     )}
                 </div>
             </div>
-            <div className="landscape:max-h-[42rem] portrait:max-h-[24rem] py-9 h-[80vh] max-w-screen-lg w-full mx-auto">
-                <div className="aspect-square max-h-full mx-auto p-5">
+            <div className="mx-auto h-[80vh] w-full max-w-screen-lg py-9 portrait:max-h-[24rem] landscape:max-h-[42rem]">
+                <div className="mx-auto aspect-square max-h-full p-5">
                     <Upload />
                 </div>
             </div>
-            <div className="max-w-screen-md w-full mx-auto flex-grow">
+            <div className="mx-auto w-full max-w-screen-md grow">
                 <Scroller />
             </div>
         </div>

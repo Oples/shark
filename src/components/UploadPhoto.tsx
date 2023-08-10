@@ -1,11 +1,15 @@
-import { BsCamera } from 'react-icons/bs'
-import Dropzone, { DropEvent, FileRejection } from 'react-dropzone'
 import { useCallback } from 'react'
+import Dropzone, { DropEvent, FileRejection } from 'react-dropzone'
+import { BsCamera } from 'react-icons/bs'
 
 function Upload() {
-    const onDrop = useCallback((acceptedFiles: any, _fileRej: FileRejection[], _ev: DropEvent) => {
-        console.log(acceptedFiles)
-    }, [])
+    const onDrop = useCallback(
+        (acceptedFiles: unknown, _fileRej: FileRejection[], _ev: DropEvent) => {
+            // TODO: Do something with the files
+            console.log(acceptedFiles, _fileRej, _ev)
+        },
+        []
+    )
 
     return (
         <Dropzone
@@ -18,10 +22,10 @@ function Upload() {
         >
             {({ getRootProps, getInputProps, isDragActive }) => (
                 <div
-                    className={`border-4 outline-0 transition cursor-pointer dark:text-cyan-200 text-cyan-900 rounded-lg h-full mx-auto flex flex-col text-3xl text-center items-center justify-center gap-5 ${
+                    className={`mx-auto flex h-full cursor-pointer flex-col items-center justify-center gap-5 rounded-lg border-4 text-center text-3xl text-cyan-900 outline-0 transition dark:text-cyan-200 ${
                         isDragActive
-                            ? 'border-cyan-800/60 dark:border-cyan-200/50 border-dashed'
-                            : 'border-transparent hover:border-cyan-800/20 hover:dark:border-cyan-200/30 border-dashed'
+                            ? 'border-dashed border-cyan-800/60 dark:border-cyan-200/50'
+                            : 'border-dashed border-transparent hover:border-cyan-800/20 hover:dark:border-cyan-200/30'
                     }`}
                     {...getRootProps()}
                 >

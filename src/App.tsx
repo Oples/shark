@@ -4,6 +4,8 @@ import Home from './routes/home'
 import Credits from './routes/credits'
 import { ErrorBoundary } from 'react-error-boundary'
 import Post from './routes/post'
+import { useEffect } from 'react'
+import { isDark } from './utils/theme'
 
 function App() {
     const router = createBrowserRouter([
@@ -23,9 +25,13 @@ function App() {
         },
     ])
 
+    useEffect(() => {
+        isDark() ? document.body.classList.add('dark') : document.body.classList.remove('dark')
+    }, [])
+
     return (
         <>
-            <main className="h-full flex items-center bg-main">
+            <main className="bg-main flex h-full items-center">
                 <RouterProvider router={router} />
             </main>
         </>

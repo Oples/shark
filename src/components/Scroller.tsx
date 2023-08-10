@@ -1,87 +1,122 @@
 import { useCallback, useState } from 'react'
 import InfiniteScroll from 'react-infinite-scroller'
-import PostImage from './PostImage'
-import { SharkPost } from '../../shark_back/bindings/SharkPost'
 import { useEffectOnce } from 'react-use'
+import { SharkPost } from '../../shark_back/bindings/SharkPost'
+import PostImage from './PostImage'
 
 function Scroller({ ...props }) {
     const [items, setItems] = useState([] as SharkPost[])
-    const [fetching, setFetching] = useState(false)
     const step = 20
     const [from, setFrom] = useState(0)
     const [to, setTo] = useState(step)
+    const [storeCursor, setStoreCursor] = useState(0)
+    let fetching = false // HACK: For infinite scroll (React doesn't update the state)
+    const [more, setMore] = useState(false)
 
+    /**
+     * Retrieves a range of SharkPost items from the backend.
+     *
+     * @param {number} from - The starting index of the range.
+     * @param {number} to - The ending index of the range.
+     * @return {Promise<SharkPost[]>} - A promise that resolves to an array of SharkPost items.
+     */
     const loadItems = async (from: number, to: number): Promise<SharkPost[]> => {
-        let result = []
-
         try {
             const resp = await fetch(
                 `${import.meta.env.VITE_BACKEND_SCHEMA}://${
                     import.meta.env.VITE_BACKEND_ADDRESS
                 }/posts/${from}/${to - from}`
             )
-            result = await resp.json()
+            return await resp.json()
         } catch (e) {
             console.error(e)
-            // wait before retry
-            await new Promise((resolve) => setTimeout(resolve, 1000))
+            // Wait before fetching again
+            await new Promise((resolve) => setTimeout(resolve, 3 * 1000 + Math.random() * 20))
+            return []
         }
-
-        return result
     }
 
-    useEffectOnce(() => {
-        fetchItems()
-    })
+    function setFromTo(from: number, to: number) {
+        setFrom(from)
+        setTo(to)
+    }
 
-    const fetchItems = useCallback(async () => {
+    /**
+     * Fetches images asynchronously.
+     *
+     * @return {Promise<void>} - A Promise that resolves when the images are fetched.
+     */
+    const fetchImages = useCallback(async () => {
+        // Check if fetching is already in progress
         if (fetching) {
             return
         }
 
-        setFetching(true)
+        // Set fetching flag to true
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        fetching = true
 
         try {
-            let { issues } = {
-                issues: await loadItems(from, to),
-            }
-            setFrom(to)
-            setTo(to + step)
+            // Load items from 'from' to 'to'
+            const issues = await loadItems(from, to)
 
-            let columnCursor = 0
-            issues = issues.map((item) => {
-                const randHorizontal = Math.random() > 0.7 && columnCursor % 2 === 0
-                columnCursor = randHorizontal ? 0 : columnCursor + 1
+            setFromTo(to, to + step)
 
-                return { ...item, horizontal: randHorizontal } // TODO: fix the horizontal split view
+            let column_cursor = storeCursor
+            const newItems = issues.map((item, index) => {
+                // Generate a random boolean value for 'randHorizontal'
+                const rand_is_horizontal = Math.random() > 0.7 && column_cursor % 2 === 0
+
+                const result = {
+                    ...item,
+                    horizontal: rand_is_horizontal,
+                    nextCursor: index,
+                    cursor: column_cursor,
+                }
+                // Update 'columnCursor' based on the value of 'randHorizontal'
+                rand_is_horizontal ? (column_cursor = 0) : (column_cursor += 1)
+                // Ensure 'columnCursor' is within the range of 0 to 1
+                column_cursor %= 2
+
+                return result
             })
 
-            const allItems = [...items, ...issues]
+            setStoreCursor(column_cursor)
 
-            setItems(allItems)
+            // Append the new items to the 'prevItems' array
+            setItems((prevItems) => [...prevItems, ...newItems])
         } finally {
-            setFetching(false)
+            // Set fetching flag to false
+            fetching = false
         }
-    }, [items, fetching, from, to])
+    }, [fetching, from, to, storeCursor])
+
+    useEffectOnce(() => {
+        // fetchImages()
+        setMore(true)
+    })
 
     const loader = (
-        <div key="loader" className="flex pb-6 w-full max-w-full px-4" {...props}>
+        <div key="loader" className="flex w-full max-w-full px-4 pb-6" {...props}>
             <PostImage skeleton />
         </div>
     )
 
     return (
         <InfiniteScroll
-            loadMore={fetchItems}
-            hasMore={true}
+            loadMore={fetchImages}
+            hasMore={more}
             loader={loader}
             threshold={500}
-            className="w-full h-full pb-14 pl-4"
-            {...props}
+            className="h-full w-full pb-14 pl-4"
+            useWindow={true}
+            // {...props}
         >
-            <div className="flex flex-row flex-wrap mx-4">
+            <div className="mx-4 flex flex-row flex-wrap">
                 {items.length > 0
-                    ? items.map((item) => <PostImage key={item.id.toString()} item={item} />)
+                    ? items.map((item, index) => (
+                          <PostImage key={item.id.toString()} item={item} data-index={index} />
+                      ))
                     : null}
             </div>
         </InfiniteScroll>

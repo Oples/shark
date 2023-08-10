@@ -8,3 +8,13 @@ body,
     @apply w-full h-screen dark:bg-zinc-900 dark:text-white;
     color-scheme: dark light;
 }
+
+.dark .leaflet-layer,
+.dark .leaflet-control-zoom-in,
+.dark .leaflet-control-zoom-out,
+.dark .leaflet-control-attribution {
+    filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%);
+}
+.dark .leaflet-control-attribution svg {
+    filter: invert(100%) hue-rotate(180deg) brightness(105%) contrast(110%);
+}

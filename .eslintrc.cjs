@@ -1,14 +1,42 @@
 module.exports = {
-  env: { browser: true, es2020: true },
-  extends: [
-    'eslint:recommended',
-    'plugin:@typescript-eslint/recommended',
-    'plugin:react-hooks/recommended',
-  ],
-  parser: '@typescript-eslint/parser',
-  parserOptions: { ecmaVersion: 'latest', sourceType: 'module' },
-  plugins: ['react-refresh'],
-  rules: {
-    'react-refresh/only-export-components': 'warn',
-  },
+    env: {
+        browser: true,
+        es2021: true,
+    },
+    extends: [
+        'eslint:recommended',
+        'plugin:@typescript-eslint/recommended',
+        'plugin:react/recommended',
+        'plugin:react-hooks/recommended',
+        'plugin:react/jsx-runtime',
+        'plugin:tailwindcss/recommended',
+        'plugin:import/recommended',
+        'plugin:import/typescript',
+        'plugin:import/errors',
+        'plugin:import/warnings',
+    ],
+    overrides: [
+        {
+            env: {
+                node: true,
+            },
+            files: ['.eslintrc.{js,cjs}'],
+            parserOptions: {
+                sourceType: 'script',
+            },
+        },
+    ],
+    parser: '@typescript-eslint/parser',
+    parserOptions: {
+        ecmaVersion: 'latest',
+        sourceType: 'module',
+        ecmaFeatures: {
+            "jsx": true
+        }
+    },
+    plugins: ['@typescript-eslint', 'react', 'react-refresh'],
+    rules: {
+        'react-refresh/only-export-components': 'warn',
+        'import/named': 'off',
+    },
 }
