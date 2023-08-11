@@ -24,7 +24,7 @@ impl Default for Model {
         Self {
             id: 1,
             user_id: "uuid".to_string(),
-            img_url: "https://picsum.photos/200/300".to_string(),
+            img_url: "/pexels-elianne-dipp-4666748.jpg".to_string(), // https://picsum.photos/200/300
             title: "test".to_string(),
             location_latitude: 51.505,
             location_longitude: -0.09,

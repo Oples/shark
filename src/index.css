@@ -9,12 +9,43 @@ body,
     color-scheme: dark light;
 }
 
+.leaflet-container {
+    @apply bg-transparent;
+}
 .dark .leaflet-layer,
-.dark .leaflet-control-zoom-in,
-.dark .leaflet-control-zoom-out,
 .dark .leaflet-control-attribution {
-    filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%);
+    filter: invert(1) hue-rotate(180deg) brightness(0.9) contrast(1.2);
 }
 .dark .leaflet-control-attribution svg {
-    filter: invert(100%) hue-rotate(180deg) brightness(105%) contrast(110%);
+    filter: invert(1) hue-rotate(180deg) brightness(105%) contrast(1);
+}
+.leaflet-container .leaflet-control-attribution {
+    opacity: 0.9;
+    border-radius: 0.25rem 0 0 0;
+    line-height: 1;
+    padding: 0.12rem 0.3rem 0.12rem 0.4rem;
+    /* padding: 5rem; */
+    background: rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(2px);
+}
+.dark .leaflet-container .leaflet-control-attribution {
+    backdrop-filter: blur(2px) invert(1) contrast(1.3) hue-rotate(180deg);
+}
+
+.leaflet-container .leaflet-bar.leaflet-control-zoom {
+    @apply rounded-xl overflow-hidden;
+    backdrop-filter: blur(2px);
+}
+.leaflet-container .leaflet-bar a {
+    border-bottom: 0px none;
+    width: 2rem;
+    height: 2rem;
+    line-height: 2rem;
+    display: block;
+    text-align: center;
+    text-decoration: none;
+    @apply text-zinc-950 bg-white/80 dark:text-white dark:bg-zinc-900/90;
+}
+.dark .leaflet-container .leaflet-pane .leaflet-marker-pane {
+    filter: invert(1);
 }

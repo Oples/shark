@@ -31,7 +31,7 @@ function PostImage({ skeleton, item, ...prop }: PostImageParams) {
             <a
                 target="_blank"
                 rel="noopener"
-                className="h-full w-full overflow-hidden rounded-md shadow-lg shadow-black/20 dark:shadow-black/60"
+                className="h-full w-full overflow-hidden rounded-md shadow-lg shadow-black/30 dark:shadow-black/60"
                 onClick={() => {
                     if (!skeleton) navigate(post_url, { preventScrollReset: true })
                 }}

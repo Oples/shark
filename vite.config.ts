@@ -1,6 +1,6 @@
 /// <reference types="vite/client" />
-import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react-swc'
+import { defineConfig } from 'vite'
 
 // https://vitejs.dev/config/
 process.env = { ...process.env, ...import.meta.env }

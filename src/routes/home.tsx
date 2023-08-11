@@ -18,7 +18,7 @@ function Home() {
     }, [theme])
 
     return (
-        <div className="relative flex min-h-screen w-full flex-col self-start overflow-auto bg-white  text-zinc-900 dark:bg-zinc-900 dark:text-white">
+        <div className="relative flex min-h-screen w-full flex-col self-start overflow-auto bg-white text-zinc-900 dark:bg-zinc-900 dark:text-white">
             <div className="absolute right-0 top-0 p-4 text-3xl">
                 <div onClick={toggleTheme}>
                     {theme ? (

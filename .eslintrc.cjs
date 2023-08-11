@@ -20,7 +20,7 @@ module.exports = {
             env: {
                 node: true,
             },
-            files: ['.eslintrc.{js,cjs}'],
+            files: ['.eslintrc.{js,cjs}', '.prettierrc.{js,cjs}', 'tailwind.config.{js,cjs}'],
             parserOptions: {
                 sourceType: 'script',
             },
@@ -31,8 +31,8 @@ module.exports = {
         ecmaVersion: 'latest',
         sourceType: 'module',
         ecmaFeatures: {
-            "jsx": true
-        }
+            jsx: true,
+        },
     },
     plugins: ['@typescript-eslint', 'react', 'react-refresh'],
     rules: {
