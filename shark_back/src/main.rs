@@ -1,54 +1,80 @@
 use axum::{
-    extract::Path,
-    routing::{delete, get, patch, post, put},
+    extract::{Path, State},
+    http::StatusCode,
+    response::IntoResponse,
+    routing::{delete, get, post},
     Json, Router,
 };
+use chrono::Utc;
 use entity::{shark_comment, shark_post};
 use migration::Migrator;
-use sea_orm::Database;
-use serde::{Deserialize, Serialize};
+use migration::MigratorTrait;
+use sea_orm::{
+    ActiveModelTrait, ActiveValue, ColumnTrait, Database, DatabaseConnection, EntityTrait,
+    PaginatorTrait, QueryFilter,
+};
+use serde_json::json;
 use sqlx::sqlite::SqliteConnectOptions;
 use tower_http::cors::CorsLayer;
-use ts_rs::TS;
 
-#[derive(TS, Debug, Serialize, Deserialize, PartialEq)]
-#[ts(export)]
-pub struct SharkPost {
-    id: u64,
-    user_id: u64,
-    img_url: String,
-    title: String,
-    location: String,
-    description: String,
-    created_at: String,
-    updated_at: String,
+#[derive(Clone)]
+struct AppState {
+    db: DatabaseConnection,
 }
 
-async fn get_posts(param: Option<Path<(u64, u64)>>) -> Json<Vec<shark_post::Model>> {
+/// Get posts from database
+async fn get_posts(
+    State(state): State<AppState>,
+    param: Option<Path<(i64, u64)>>,
+) -> Json<Vec<shark_post::Model>> {
     let (id, size) = match param {
         Some(Path(params)) => params,
         None => (0, 10),
     };
+    let mut posts = shark_post::Entity::find()
+        .filter(shark_post::Column::Id.gt(id))
+        .paginate(&state.db, size);
 
-    let mut posts: Vec<shark_post::Model> = Vec::new();
-    for p in 0..size {
-        posts.push(shark_post::Model {
-            id: id + p,
-            ..Default::default()
-        });
-    }
-    Json(posts)
+    let posts = posts
+        .fetch_and_next()
+        .await
+        .expect("Pagination error while fetching posts");
+
+    Json(posts.unwrap_or(vec![]))
 }
 
-async fn get_post(Path(id): Path<u64>) -> Json<shark_post::Model> {
-    let post = shark_post::Model {
-        id,
+async fn get_post(State(state): State<AppState>, Path(id): Path<i64>) -> impl IntoResponse {
+    let post = shark_post::Entity::find_by_id(id)
+        .one(&state.db)
+        .await
+        .unwrap();
+
+    match post {
+        None => (StatusCode::NOT_FOUND, Json(json!({"code": 404}))),
+        Some(post) => (StatusCode::OK, Json(serde_json::to_value(post).unwrap())),
+    }
+}
+
+async fn new_post(
+    State(state): State<AppState>,
+    Json(post): Json<shark_post::NewInsert>,
+) -> impl IntoResponse {
+    let post = shark_post::ActiveModel {
+        user_id: ActiveValue::Set(post.user_id),
+        img_url: ActiveValue::Set(post.img),
+        title: ActiveValue::Set(post.title),
+        location_latitude: ActiveValue::Set(post.location_latitude),
+        location_longitude: ActiveValue::Set(post.location_longitude),
+        description: ActiveValue::Set(post.description),
+        created_at: ActiveValue::Set(Utc::now().to_string()),
+        updated_at: ActiveValue::Set(Utc::now().to_string()),
         ..Default::default()
     };
-    Json(post)
+    let post = post.insert(&state.db).await.unwrap();
+    (StatusCode::CREATED, Json(post))
 }
 
-async fn get_comments(Path(id): Path<u64>) -> Json<Vec<shark_comment::Model>> {
+async fn get_comments(Path(id): Path<i64>) -> Json<Vec<shark_comment::Model>> {
     let comments: Vec<shark_comment::Model> = vec![shark_comment::Model {
         post_id: id,
         ..Default::default()
@@ -56,7 +82,7 @@ async fn get_comments(Path(id): Path<u64>) -> Json<Vec<shark_comment::Model>> {
     Json(comments)
 }
 
-async fn get_comment(Path(id): Path<u64>, Path(cid): Path<u64>) -> Json<shark_comment::Model> {
+async fn get_comment(Path(id): Path<i64>, Path(cid): Path<i64>) -> Json<shark_comment::Model> {
     let comment: shark_comment::Model = shark_comment::Model {
         id: cid,
         post_id: id,
@@ -65,7 +91,7 @@ async fn get_comment(Path(id): Path<u64>, Path(cid): Path<u64>) -> Json<shark_co
     Json(comment)
 }
 
-async fn delete_comment(Path(cid): Path<u64>) -> Json<bool> {
+async fn delete_comment(Path(_cid): Path<u64>) -> Json<bool> {
     // let deleted = shark_comment::Entity::delete_by_id(cid).exec(db).await;
     // return Json(deleted.is_ok());
     Json(true)
@@ -93,12 +119,18 @@ async fn main() {
     let db = Database::connect(format!("sqlite://{}", db_path))
         .await
         .expect("Could not connect to database");
-    Migrator::up(&db, None).await?;
+
+    Migrator::up(&db, None)
+        .await
+        .expect("Could not migrate database");
+
+    let state = AppState { db };
 
     let app = Router::new()
         .route("/posts", get(get_posts))
         .route("/posts/:id", get(get_posts))
         .route("/posts/:id/:size", get(get_posts))
+        .route("/new_post", post(new_post))
         .route("/post/:id", get(get_post))
         .route("/post/:id/comments", get(get_comments))
         .route("/post/:id/comment/:cid", get(get_comment))
@@ -106,7 +138,10 @@ async fn main() {
         .route("/post/:id/comment/:cid", delete(delete_comment))
         // .route("/post/:id/comment/:cid", put(put_comment))
         // .route("/post/:id/comment/:cid", patch(patch_comment))
-        .layer(CorsLayer::permissive());
+        // CORS
+        .layer(CorsLayer::permissive())
+        // DATABASE
+        .with_state(state);
 
     // Make the service available at http://localhost:8080
     const HOST: &str = "0.0.0.0";

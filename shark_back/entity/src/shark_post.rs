@@ -8,7 +8,7 @@ use ts_rs::TS;
 #[ts(rename = "SharkPost", export)]
 pub struct Model {
     #[sea_orm(primary_key)]
-    pub id: u64,
+    pub id: i64,
     pub user_id: String,
     pub img_url: String,
     pub title: String,
@@ -17,6 +17,17 @@ pub struct Model {
     pub description: String,
     pub created_at: String,
     pub updated_at: String,
+}
+
+// New SharkPost
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct NewInsert {
+    pub user_id: String,
+    pub img: String,
+    pub title: String,
+    pub location_latitude: f64,
+    pub location_longitude: f64,
+    pub description: String,
 }
 
 impl Default for Model {

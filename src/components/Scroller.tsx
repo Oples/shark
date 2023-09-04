@@ -60,6 +60,11 @@ function Scroller({ ...props }) {
             // Load items from 'from' to 'to'
             const issues = await loadItems(from, to)
 
+            if (issues.length === 0) {
+                setMore(false)
+                return
+            }
+
             setFromTo(to, to + step)
 
             let column_cursor = storeCursor
@@ -74,7 +79,7 @@ function Scroller({ ...props }) {
                     cursor: column_cursor,
                 }
                 // Update 'columnCursor' based on the value of 'randHorizontal'
-                rand_is_horizontal ? (column_cursor = 0) : (column_cursor += 1)
+                column_cursor = rand_is_horizontal ? 0 : column_cursor + 1
                 // Ensure 'columnCursor' is within the range of 0 to 1
                 column_cursor %= 2
 

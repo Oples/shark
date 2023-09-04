@@ -1,7 +1,7 @@
 use chrono::Utc;
 use sea_orm::entity::prelude::*;
 use serde::{Deserialize, Serialize};
-use std::net::{Ipv4Addr, SocketAddr};
+use std::net::Ipv4Addr;
 use ts_rs::TS;
 
 #[derive(TS, Debug, Clone, Serialize, Deserialize, PartialEq, DeriveEntityModel)]
@@ -9,14 +9,14 @@ use ts_rs::TS;
 #[ts(rename = "SharkComment", export)]
 pub struct Model {
     #[sea_orm(primary_key)]
-    pub id: u64,
+    pub id: i64,
     #[sea_orm(
         belongs_to = "shark_post::Entity",
         from = "Column::post_id",
         to = "Column::id"
     )]
-    pub post_id: u64,
-    pub reply_to: u64,
+    pub post_id: i64,
+    pub reply_to: i64,
     pub user_ip: String,
     pub content: String,
     pub created_at: String,

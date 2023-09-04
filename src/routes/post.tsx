@@ -52,6 +52,8 @@ function Post() {
                 lat: post.location_latitude,
                 lng: post.location_longitude,
             })
+
+            console.debug(`Fetched post ${id}`, post)
         }
         fetchPostData()
 
@@ -62,28 +64,28 @@ function Post() {
                 iconAnchor: [20, 25],
             })
         )
+
+        console.debug(`Fetching post ${id}`)
     })
 
     return (
         <div className="bg-main h-screen w-full overflow-auto">
-            <div className="min-h-full bg-cyan-500/20 backdrop-brightness-125 backdrop-contrast-75 dark:bg-zinc-950/80 dark:backdrop-brightness-50 dark:backdrop-contrast-100 dark:backdrop-saturate-50">
+            <div
+                className="relative h-3/5 min-h-[25rem] w-full bg-white bg-cover bg-center bg-no-repeat text-zinc-900 shadow-xl shadow-black/20 transition-[height] dark:bg-zinc-900 dark:text-white sm:h-3/5 sm:min-h-[35rem] md:h-1/2"
+                style={{ backgroundImage: `url(${post?.img_url || ''})` }}
+            >
+                <div className="pointer-events-none absolute h-0 w-0 -translate-x-1/2 -translate-y-1/2 bg-radial-dot p-32" />
                 <div
-                    className="relative aspect-square max-h-96 w-full bg-white bg-cover bg-center bg-no-repeat text-zinc-900 shadow-xl shadow-black/20 dark:bg-zinc-900 dark:text-white"
-                    style={{
-                        backgroundImage: `url(${post?.img_url || ''})`,
-                    }}
+                    className="inline-flex p-2 text-white drop-shadow"
+                    onClick={() => history.back()}
                 >
-                    <div className="pointer-events-none absolute h-0 w-0 -translate-x-1/2 -translate-y-1/2 bg-radial-dot p-32" />
-                    <div
-                        className="inline-flex p-2 text-white drop-shadow"
-                        onClick={() => history.back()}
-                    >
-                        <IoMdArrowRoundBack className="text-4xl font-bold drop-shadow" />
-                    </div>
+                    <IoMdArrowRoundBack className="text-4xl font-bold drop-shadow" />
                 </div>
+            </div>
+            <div className="min-h-full bg-cyan-500/20 backdrop-brightness-125 backdrop-contrast-75 dark:bg-zinc-950/80 dark:backdrop-brightness-50 dark:backdrop-contrast-100 dark:backdrop-saturate-50">
                 <div className="flex w-full flex-col gap-4 p-4">
                     <div className="mx-auto w-full max-w-screen-md">
-                        <Section title={`Post ${id}`}>
+                        <Section title={`${post?.title}`}>
                             <div className="flex aspect-video h-full w-full items-center justify-center bg-white/80 text-zinc-900 backdrop-blur-[4px] dark:bg-zinc-900/90 dark:text-white">
                                 {post?.location_latitude && post?.location_longitude ? (
                                     <MapContainer
