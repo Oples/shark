@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom'
-import { SharkPost } from '../../shark_back/bindings/SharkPost'
+import { SharkPost } from '../../shark_back/entity/bindings/SharkPost'
 import bgImage from '../assets/pic/20230522_170011-clear.webp'
 
 interface PostImageParams {

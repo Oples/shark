@@ -1,7 +1,7 @@
 import { useCallback, useState } from 'react'
 import InfiniteScroll from 'react-infinite-scroller'
 import { useEffectOnce } from 'react-use'
-import { SharkPost } from '../../shark_back/bindings/SharkPost'
+import { SharkPost } from '../../shark_back/entity/bindings/SharkPost'
 import PostImage from './PostImage'
 
 function Scroller({ ...props }) {

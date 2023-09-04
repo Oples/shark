@@ -3,9 +3,11 @@ use axum::{
     routing::{delete, get, patch, post, put},
     Json, Router,
 };
-mod models;
-use models::{shark_comment, shark_post};
+use entity::{shark_comment, shark_post};
+use migration::Migrator;
+use sea_orm::Database;
 use serde::{Deserialize, Serialize};
+use sqlx::sqlite::SqliteConnectOptions;
 use tower_http::cors::CorsLayer;
 use ts_rs::TS;
 
@@ -71,6 +73,28 @@ async fn delete_comment(Path(cid): Path<u64>) -> Json<bool> {
 
 #[tokio::main]
 async fn main() {
+    let db_path = "SeaORM.db";
+
+    // Create SQLite database if it does not exist
+    let options = SqliteConnectOptions::new();
+    let options = options
+        .filename(format!("./{}", db_path))
+        .create_if_missing(true);
+
+    let pool = sqlx::sqlite::SqlitePoolOptions::new()
+        .connect_with(options)
+        .await
+        .expect("Could not connect to sqlite db");
+
+    // close connection
+    drop(pool);
+
+    // Connect to the database using sea_orm
+    let db = Database::connect(format!("sqlite://{}", db_path))
+        .await
+        .expect("Could not connect to database");
+    Migrator::up(&db, None).await?;
+
     let app = Router::new()
         .route("/posts", get(get_posts))
         .route("/posts/:id", get(get_posts))

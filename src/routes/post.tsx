@@ -6,7 +6,7 @@ import { MapContainer, Marker, TileLayer } from 'react-leaflet'
 import { useParams } from 'react-router-dom'
 import { useEffectOnce } from 'react-use'
 import { Result } from 'ts-results'
-import { SharkPost } from '../../shark_back/bindings/SharkPost'
+import { SharkPost } from '../../shark_back/entity/bindings/SharkPost'
 
 function Section({ title, children, ...props }: { title: string; children: React.ReactNode }) {
     return (

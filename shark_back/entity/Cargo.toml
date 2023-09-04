@@ -1,0 +1,12 @@
+[package]
+name = "entity"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+sea-orm = { version = "0.12.2", features = ["with-rust_decimal"] }
+ts-rs = { version = "7.0.0", features = ["chrono-impl"] }
+serde = { version = "1.0.171", features = ["derive", "rc"] }
+chrono = "0.4.28"
