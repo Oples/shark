@@ -12,8 +12,8 @@ pub struct Model {
     pub user_id: String,
     pub img_url: String,
     pub title: String,
-    pub location_latitude: f64,
-    pub location_longitude: f64,
+    pub location_latitude: Option<f64>,
+    pub location_longitude: Option<f64>,
     pub description: String,
     pub created_at: String,
     pub updated_at: String,
@@ -25,8 +25,8 @@ pub struct NewInsert {
     pub user_id: String,
     pub img: String,
     pub title: String,
-    pub location_latitude: f64,
-    pub location_longitude: f64,
+    pub location_latitude: Option<f64>,
+    pub location_longitude: Option<f64>,
     pub description: String,
 }
 
@@ -37,8 +37,8 @@ impl Default for Model {
             user_id: "uuid".to_string(),
             img_url: "/pexels-elianne-dipp-4666748.jpg".to_string(), // https://picsum.photos/200/300
             title: "test".to_string(),
-            location_latitude: 51.505,
-            location_longitude: -0.09,
+            location_latitude: Some(51.505),
+            location_longitude: Some(-0.09),
             description: "test".to_string(),
             created_at: Utc::now().to_string(),
             updated_at: Utc::now().to_string(),
