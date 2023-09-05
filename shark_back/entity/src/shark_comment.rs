@@ -12,8 +12,8 @@ pub struct Model {
     pub id: i64,
     #[sea_orm(
         belongs_to = "shark_post::Entity",
-        from = "Column::post_id",
-        to = "Column::id"
+        from = "Column::PostId",
+        to = "shark_post::Column::Id"
     )]
     pub post_id: i64,
     pub reply_to: i64,

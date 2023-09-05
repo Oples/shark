@@ -61,13 +61,12 @@ async fn new_post(
 ) -> impl IntoResponse {
     let post = shark_post::ActiveModel {
         user_id: ActiveValue::Set(post.user_id),
-        img_url: ActiveValue::Set(post.img),
         title: ActiveValue::Set(post.title),
         location_latitude: ActiveValue::Set(post.location_latitude),
         location_longitude: ActiveValue::Set(post.location_longitude),
         description: ActiveValue::Set(post.description),
         created_at: ActiveValue::Set(Utc::now().to_string()),
-        updated_at: ActiveValue::Set(Utc::now().to_string()),
+        updated_at: ActiveValue::Set(Some(Utc::now().to_string())),
         ..Default::default()
     };
     let post = post.insert(&state.db).await.unwrap();

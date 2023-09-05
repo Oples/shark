@@ -25,7 +25,7 @@ impl MigrationTrait for Migration {
                     .col(ColumnDef::new(SharkPosts::LocationLongitude).float().null())
                     .col(ColumnDef::new(SharkPosts::Description).string().not_null())
                     .col(ColumnDef::new(SharkPosts::CreatedAt).date_time().not_null())
-                    .col(ColumnDef::new(SharkPosts::UpdatedAt).date_time().not_null())
+                    .col(ColumnDef::new(SharkPosts::UpdatedAt).date_time().null())
                     .to_owned(),
             )
             .await?;
@@ -50,18 +50,14 @@ impl MigrationTrait for Migration {
                             .date_time()
                             .not_null(),
                     )
-                    .to_owned(),
-            )
-            .await?;
-
-        manager
-            .create_foreign_key(
-                ForeignKey::create()
-                    .name("fk_shark_image_post_id")
-                    .from_tbl(SharkImages::Table)
-                    .from_col(SharkImages::PostId)
-                    .to_tbl(SharkPosts::Table)
-                    .to_col(SharkPosts::Id)
+                    .foreign_key(
+                        ForeignKey::create()
+                            .name("fk_shark_image_post_id")
+                            .from_tbl(SharkImages::Table)
+                            .from_col(SharkImages::PostId)
+                            .to_tbl(SharkPosts::Table)
+                            .to_col(SharkPosts::Id),
+                    )
                     .to_owned(),
             )
             .await?;
@@ -89,18 +85,14 @@ impl MigrationTrait for Migration {
                     )
                     .col(ColumnDef::new(SharkComments::UpdatedAt).date_time().null())
                     .col(ColumnDef::new(SharkComments::RemovedAt).date_time().null())
-                    .to_owned(),
-            )
-            .await?;
-
-        manager
-            .create_foreign_key(
-                ForeignKey::create()
-                    .name("fk_shark_comment_post_id")
-                    .from_tbl(SharkComments::Table)
-                    .from_col(SharkComments::PostId)
-                    .to_tbl(SharkPosts::Table)
-                    .to_col(SharkPosts::Id)
+                    .foreign_key(
+                        ForeignKey::create()
+                            .name("fk_shark_comment_post_id")
+                            .from_tbl(SharkComments::Table)
+                            .from_col(SharkComments::PostId)
+                            .to_tbl(SharkPosts::Table)
+                            .to_col(SharkPosts::Id),
+                    )
                     .to_owned(),
             )
             .await?;
