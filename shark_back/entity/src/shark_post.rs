@@ -11,20 +11,26 @@ pub struct Model {
     pub id: i64,
     pub user_id: String,
     pub title: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub location_latitude: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub location_longitude: Option<f64>,
     pub description: String,
     pub created_at: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub updated_at: Option<String>,
 }
 
 // New SharkPost
-#[derive(Clone, Debug, Deserialize, Serialize)]
+#[derive(TS, Clone, Debug, Deserialize, Serialize)]
+#[ts(rename = "NewSharkPost", export)]
 pub struct NewInsert {
     pub user_id: String,
     pub img: String,
     pub title: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub location_latitude: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub location_longitude: Option<f64>,
     pub description: String,
 }

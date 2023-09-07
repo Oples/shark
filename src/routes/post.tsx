@@ -1,11 +1,11 @@
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
+import { Result } from 'oxide.ts'
 import { useCallback, useState } from 'react'
 import { IoMdArrowRoundBack } from 'react-icons/io'
 import { MapContainer, Marker, TileLayer } from 'react-leaflet'
 import { useParams } from 'react-router-dom'
 import { useEffectOnce } from 'react-use'
-import { Result } from 'ts-results'
 import { SharkPost } from '../../shark_back/entity/bindings/SharkPost'
 
 function Section({ title, children, ...props }: { title: string; children: React.ReactNode }) {
@@ -29,28 +29,27 @@ function Post() {
 
     /**
      * Fetches a post from the backend server.
-     *
-     * @return {Promise<any>} A promise that resolves to the fetched post.
      */
-    const fetchPost = useCallback(async () => {
-        return Result.wrap(async (): Promise<SharkPost> => {
+    const fetchPost: () => Promise<Result<SharkPost, never>> = useCallback(async () => {
+        async function fetchPostCall() {
             const resp = await fetch(
                 `${import.meta.env.VITE_BACKEND_SCHEMA}://${
                     import.meta.env.VITE_BACKEND_ADDRESS
                 }/post/${id}`
             )
-            return await resp.json()
-        })
+            return resp.json()
+        }
+        return Result((await fetchPostCall()) as SharkPost)
     }, [id])
 
     useEffectOnce(() => {
         const fetchPostData = async () => {
-            const post = await (await fetchPost()).unwrap()
+            const post = (await fetchPost()).unwrap()
 
             setPost(post)
             setPostLocation({
-                lat: post.location_latitude,
-                lng: post.location_longitude,
+                lat: post.location_latitude ?? 0,
+                lng: post.location_longitude ?? 0,
             })
 
             console.debug(`Fetched post ${id}`, post)
@@ -72,7 +71,7 @@ function Post() {
         <div className="bg-main h-screen w-full overflow-auto">
             <div
                 className="relative h-3/5 min-h-[25rem] w-full bg-white bg-cover bg-center bg-no-repeat text-zinc-900 shadow-xl shadow-black/20 transition-[height] dark:bg-zinc-900 dark:text-white sm:h-3/5 sm:min-h-[35rem] md:h-1/2"
-                style={{ backgroundImage: `url(${post?.img_url || ''})` }}
+                style={{ backgroundImage: `url(${''})` }}
             >
                 <div className="pointer-events-none absolute h-0 w-0 -translate-x-1/2 -translate-y-1/2 bg-radial-dot p-32" />
                 <div

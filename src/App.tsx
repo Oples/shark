@@ -1,10 +1,10 @@
-import './App.css'
-import { RouterProvider, createBrowserRouter } from 'react-router-dom'
-import Home from './routes/home'
-import Credits from './routes/credits'
-import { ErrorBoundary } from 'react-error-boundary'
-import Post from './routes/post'
 import { useEffect } from 'react'
+import { ErrorBoundary } from 'react-error-boundary'
+import { RouterProvider, createBrowserRouter } from 'react-router-dom'
+import './App.css'
+import Credits from './routes/credits'
+import Home from './routes/home'
+import Post from './routes/post'
 import { isDark } from './utils/theme'
 
 function App() {

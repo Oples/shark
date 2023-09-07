@@ -36,6 +36,7 @@ module.exports = {
     },
     plugins: ['@typescript-eslint', 'react', 'react-refresh'],
     rules: {
+        '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
         'react-refresh/only-export-components': 'warn',
         'import/named': 'off',
     },

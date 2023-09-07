@@ -4,7 +4,18 @@ import { useEffectOnce } from 'react-use'
 import { SharkPost } from '../../shark_back/entity/bindings/SharkPost'
 import PostImage from './PostImage'
 
-function Scroller({ ...props }) {
+interface ScrollerProps {
+    parentRef?: React.RefObject<HTMLElement>
+}
+
+/**
+ * Retrieves a range of SharkPost items from the backend.
+ *
+ * @param {number} from - The starting index of the range.
+ * @param {number} to - The ending index of the range.
+ * @return {Promise<SharkPost[]>} - A promise that resolves to an array of SharkPost items.
+ */
+function Scroller({ parentRef, ...props }: ScrollerProps) {
     const [items, setItems] = useState([] as SharkPost[])
     const step = 20
     const [from, setFrom] = useState(0)
@@ -64,7 +75,6 @@ function Scroller({ ...props }) {
                 setMore(false)
                 return
             }
-
             setFromTo(to, to + step)
 
             let column_cursor = storeCursor
@@ -114,8 +124,9 @@ function Scroller({ ...props }) {
             loader={loader}
             threshold={500}
             className="h-full w-full pb-14 pl-4"
-            useWindow={true}
-            // {...props}
+            useWindow={!parentRef?.current}
+            getScrollParent={() => parentRef?.current ?? null}
+            {...props}
         >
             <div className="mx-4 flex flex-row flex-wrap">
                 {items.length > 0
