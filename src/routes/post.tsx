@@ -23,7 +23,13 @@ function Section({ title, children, ...props }: { title: string; children: React
 
 function Post() {
     const { id } = useParams()
-    const [post, setPost] = useState<SharkPost>()
+    const [post, setPost] = useState<SharkPost>({
+        id: BigInt(0),
+        title: '',
+        description: '',
+        user_id: '',
+        created_at: new Date().toISOString(),
+    })
     const [postLocation, setPostLocation] = useState({ lat: 0, lng: 0 })
     const [icon, setIcon] = useState<L.Icon>()
 
@@ -63,14 +69,13 @@ function Post() {
                 iconAnchor: [20, 25],
             })
         )
-
         console.debug(`Fetching post ${id}`)
     })
 
     return (
-        <div className="bg-main h-screen w-full overflow-auto">
+        <div className="bg-main flex h-full max-h-screen w-full flex-col overflow-auto">
             <div
-                className="relative h-3/5 min-h-[25rem] w-full bg-white bg-cover bg-center bg-no-repeat text-zinc-900 shadow-xl shadow-black/20 transition-[height] dark:bg-zinc-900 dark:text-white sm:h-3/5 sm:min-h-[35rem] md:h-1/2"
+                className="relative h-3/5 min-h-[25rem] w-full shrink-0 bg-white bg-cover bg-center bg-no-repeat text-zinc-900 shadow-xl shadow-black/20 transition-[height] dark:bg-zinc-900 dark:text-white sm:h-3/5 sm:min-h-[35rem] md:h-1/2"
                 style={{ backgroundImage: `url(${''})` }}
             >
                 <div className="pointer-events-none absolute h-0 w-0 -translate-x-1/2 -translate-y-1/2 bg-radial-dot p-32" />
@@ -81,9 +86,9 @@ function Post() {
                     <IoMdArrowRoundBack className="text-4xl font-bold drop-shadow" />
                 </div>
             </div>
-            <div className="min-h-full bg-cyan-500/20 backdrop-brightness-125 backdrop-contrast-75 dark:bg-zinc-950/80 dark:backdrop-brightness-50 dark:backdrop-contrast-100 dark:backdrop-saturate-50">
+            <div className="h-full shrink grow bg-cyan-500/20 backdrop-brightness-125 backdrop-contrast-75 dark:bg-zinc-950/80 dark:backdrop-brightness-50 dark:backdrop-contrast-100 dark:backdrop-saturate-50">
                 <div className="flex w-full flex-col gap-4 p-4">
-                    <div className="mx-auto w-full max-w-screen-md">
+                    <div className="mx-auto flex w-full max-w-screen-md flex-col gap-6 py-4">
                         <Section title={`${post?.title}`}>
                             <div className="flex aspect-video h-full w-full items-center justify-center bg-white/80 text-zinc-900 backdrop-blur-[4px] dark:bg-zinc-900/90 dark:text-white">
                                 {post?.location_latitude && post?.location_longitude ? (

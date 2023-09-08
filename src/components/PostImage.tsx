@@ -1,6 +1,5 @@
 import { useNavigate } from 'react-router-dom'
 import { SharkPost } from '../../shark_back/entity/bindings/SharkPost'
-import bgImage from '../assets/pic/20230522_170011-clear.webp'
 
 interface PostImageParams {
     item?: SharkPost & { horizontal?: boolean }
@@ -16,7 +15,7 @@ function PostImage({ skeleton, item, ...prop }: PostImageParams) {
     const post_image_style = skeleton
         ? {}
         : {
-              backgroundImage: `url(${post?.img_url ? post.img_url : bgImage})`,
+              backgroundImage: `url(${post?.img_url ? post.img_url : ''})`,
           }
 
     return (
