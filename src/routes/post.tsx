@@ -86,7 +86,7 @@ function Post() {
                     <IoMdArrowRoundBack className="text-4xl font-bold drop-shadow" />
                 </div>
             </div>
-            <div className="h-full shrink grow bg-cyan-500/20 backdrop-brightness-125 backdrop-contrast-75 dark:bg-zinc-950/80 dark:backdrop-brightness-50 dark:backdrop-contrast-100 dark:backdrop-saturate-50">
+            <div className="flex-1 bg-cyan-500/20 backdrop-brightness-125 backdrop-contrast-75 dark:bg-zinc-950/80 dark:backdrop-brightness-50 dark:backdrop-contrast-100 dark:backdrop-saturate-50">
                 <div className="flex w-full flex-col gap-4 p-4">
                     <div className="mx-auto flex w-full max-w-screen-md flex-col gap-6 py-4">
                         <Section title={`${post?.title}`}>
@@ -112,6 +112,11 @@ function Post() {
                                 ) : (
                                     <h3>No coordinates provided</h3>
                                 )}
+                            </div>
+                        </Section>
+                        <Section title="Description">
+                            <div className="flex aspect-video h-full w-full items-center justify-center bg-white/80 text-zinc-900 backdrop-blur-[4px] dark:bg-zinc-900/90 dark:text-white">
+                                {post?.description}
                             </div>
                         </Section>
                     </div>
