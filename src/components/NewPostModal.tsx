@@ -44,7 +44,8 @@ function NewPostModal({ opened = false, image = None, onClose = () => {} }: NewP
         const formData: NewSharkPost = {
             title: title,
             description: description,
-            img: b64,
+            // remove the data:image/png;base64, prefix
+            img: b64.replace(/^data:image\/[a-z]+;base64,/, ''),
             user_id: '1',
         }
 

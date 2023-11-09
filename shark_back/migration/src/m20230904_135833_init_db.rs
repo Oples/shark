@@ -44,7 +44,7 @@ impl MigrationTrait for Migration {
                             .primary_key(),
                     )
                     .col(ColumnDef::new(SharkImages::PostId).integer().not_null())
-                    .col(ColumnDef::new(SharkImages::FileName).string().not_null())
+                    .col(ColumnDef::new(SharkImages::FileName).string())
                     .col(
                         ColumnDef::new(SharkImages::CreatedAt)
                             .date_time()

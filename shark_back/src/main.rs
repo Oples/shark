@@ -1,12 +1,16 @@
+use std::io::{Cursor, Write};
+
 use axum::{
+    body::Full,
     extract::{Path, State},
-    http::StatusCode,
+    http::{HeaderMap, HeaderValue, Response, StatusCode},
     response::IntoResponse,
     routing::{delete, get, post},
     Json, Router,
 };
+use bytes::Bytes;
 use chrono::Utc;
-use entity::{shark_comment, shark_post};
+use entity::{shark_comment, shark_image, shark_post};
 use migration::Migrator;
 use migration::MigratorTrait;
 use sea_orm::{
@@ -21,6 +25,8 @@ use tower_http::cors::CorsLayer;
 struct AppState {
     db: DatabaseConnection,
 }
+
+const IMAGES_PATH: &str = "./images";
 
 /// Get posts from database
 async fn get_posts(
@@ -48,29 +54,84 @@ async fn get_post(State(state): State<AppState>, Path(id): Path<i64>) -> impl In
         .one(&state.db)
         .await
         .unwrap();
+    // Get images
+    let images = shark_image::Entity::find()
+        .filter(shark_image::Column::PostId.eq(id))
+        .all(&state.db)
+        .await
+        .unwrap();
 
-    match post {
+    let post = match post {
+        Some(post) => {
+            let mut post_json = serde_json::to_value(post)
+                .unwrap()
+                .as_object()
+                .unwrap()
+                .clone();
+            // add images to post
+            let mut images_json = vec![];
+            for image in images {
+                images_json.push(serde_json::to_value(image.id).unwrap());
+            }
+            post_json.insert("images".to_string(), images_json.into());
+            (
+                StatusCode::OK,
+                Json(serde_json::to_value(post_json).unwrap()),
+            )
+        }
         None => (StatusCode::NOT_FOUND, Json(json!({"code": 404}))),
-        Some(post) => (StatusCode::OK, Json(serde_json::to_value(post).unwrap())),
-    }
+    };
+
+    post
 }
 
 async fn new_post(
     State(state): State<AppState>,
-    Json(post): Json<shark_post::NewInsert>,
+    Json(user_post): Json<shark_post::NewInsert>,
 ) -> impl IntoResponse {
     let post = shark_post::ActiveModel {
-        user_id: ActiveValue::Set(post.user_id),
-        title: ActiveValue::Set(post.title),
-        location_latitude: ActiveValue::Set(post.location_latitude),
-        location_longitude: ActiveValue::Set(post.location_longitude),
-        description: ActiveValue::Set(post.description),
+        user_id: ActiveValue::Set(user_post.user_id),
+        title: ActiveValue::Set(user_post.title),
+        location_latitude: ActiveValue::Set(user_post.location_latitude),
+        location_longitude: ActiveValue::Set(user_post.location_longitude),
+        description: ActiveValue::Set(user_post.description),
         created_at: ActiveValue::Set(Utc::now().to_string()),
         updated_at: ActiveValue::Set(Some(Utc::now().to_string())),
         ..Default::default()
     };
     let post = post.insert(&state.db).await.unwrap();
+
+    // Decode the base64 image data
+    let image_data = base64::decode(user_post.img).unwrap();
+
+    let image = shark_image::ActiveModel {
+        created_at: ActiveValue::Set(Utc::now().to_string()),
+        file_name: ActiveValue::Set(None),
+        post_id: ActiveValue::Set(post.id),
+        ..Default::default()
+    };
+    let image = image.insert(&state.db).await.unwrap();
+
+    // Ensure the path exists
+    std::fs::create_dir_all(IMAGES_PATH).unwrap();
+    // Save the data to file
+    let mut file = std::fs::File::create(format!("{}/{}.png", IMAGES_PATH, image.id)).unwrap();
+    file.write_all(&image_data).unwrap();
+
     (StatusCode::CREATED, Json(post))
+}
+
+async fn get_image(Path(id): Path<i64>) -> impl IntoResponse {
+    let image_data = std::fs::read(format!("{}/{}.png", IMAGES_PATH, id)).unwrap();
+
+    Response::builder()
+        .status(StatusCode::OK)
+        .header(
+            axum::http::header::CONTENT_TYPE,
+            HeaderValue::from_static("image/png"),
+        )
+        .body(Full::new(Bytes::from(image_data)))
+        .unwrap()
 }
 
 async fn get_comments(Path(id): Path<i64>) -> Json<Vec<shark_comment::Model>> {
@@ -137,6 +198,7 @@ async fn main() {
         .route("/post/:id/comment/:cid", delete(delete_comment))
         // .route("/post/:id/comment/:cid", put(put_comment))
         // .route("/post/:id/comment/:cid", patch(patch_comment))
+        .route("/image/:id", get(get_image))
         // CORS
         .layer(CorsLayer::permissive())
         // DATABASE

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { BsMoon, BsSun } from 'react-icons/bs'
+import Upload from '../components/DropZonePhoto'
 import Scroller from '../components/Scroller'
-import Upload from '../components/UploadPhoto'
 import { isDark } from '../utils/theme'
 
 function Home() {

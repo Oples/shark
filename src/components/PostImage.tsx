@@ -15,7 +15,11 @@ function PostImage({ skeleton, item, ...prop }: PostImageParams) {
     const post_image_style = skeleton
         ? {}
         : {
-              backgroundImage: `url(${post?.img_url ? post.img_url : ''})`,
+              backgroundImage: `url(${
+                  post?.images?.[0]
+                      ? import.meta.env.VITE_BACKEND_SCHEMA + '/image/' + post.images?.[0]
+                      : ''
+              })`,
           }
 
     return (
