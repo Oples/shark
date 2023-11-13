@@ -9,9 +9,11 @@ function Upload() {
     const [uploadedImage, setUploadedImage] = useState(None as Option<File>)
 
     const onDrop = useCallback(
-        (acceptedFiles: unknown, _fileRej: FileRejection[], _ev: DropEvent) => {
+        (acceptedFiles: File[], _fileRej: FileRejection[], _ev: DropEvent) => {
             // TODO: Do something with the files
-            console.log(acceptedFiles, _fileRej, _ev)
+            console.log('onDrop', acceptedFiles, _fileRej, _ev)
+            setIsModalOpen(true)
+            setUploadedImage(Some(acceptedFiles[0] as File))
         },
         []
     )

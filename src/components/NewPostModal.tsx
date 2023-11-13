@@ -14,7 +14,8 @@ export interface NewPostModalProps {
 
 function NewPostModal({ opened = false, image = None, onClose = () => {} }: NewPostModalProps) {
     const [b64, setB64] = useState('')
-    const [b64Error, setB64Error] = useState('')
+    // TODO: Handle errors
+    // const [b64Error, setB64Error] = useState('')
     const [title, setTitle] = useState('')
     const [description, setDescription] = useState('')
     const changePictureRef = useRef<HTMLInputElement>(null)
