@@ -21,6 +21,23 @@ pub struct Model {
     pub updated_at: Option<String>,
 }
 
+#[derive(TS, Clone, Debug, Deserialize, Serialize)]
+#[ts(rename = "SerializedSharkPost", export)]
+pub struct SerializedModel {
+    pub id: i64,
+    pub user_id: String,
+    pub title: String,
+    pub images: Vec<i64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub location_latitude: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub location_longitude: Option<f64>,
+    pub description: String,
+    pub created_at: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub updated_at: Option<String>,
+}
+
 // New SharkPost
 #[derive(TS, Clone, Debug, Deserialize, Serialize)]
 #[ts(rename = "NewSharkPost", export)]

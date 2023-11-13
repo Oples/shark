@@ -6,7 +6,8 @@ import { IoMdArrowRoundBack } from 'react-icons/io'
 import { MapContainer, Marker, TileLayer } from 'react-leaflet'
 import { useParams } from 'react-router-dom'
 import { useEffectOnce } from 'react-use'
-import { SharkPost } from '../../shark_back/entity/bindings/SharkPost'
+import { SerializedSharkPost } from '../../shark_back/entity/bindings/SerializedSharkPost'
+import PostImage from '../components/PostImage'
 
 function Section({ title, children, ...props }: { title: string; children: React.ReactNode }) {
     return (
@@ -23,9 +24,10 @@ function Section({ title, children, ...props }: { title: string; children: React
 
 function Post() {
     const { id } = useParams()
-    const [post, setPost] = useState<SharkPost>({
+    const [post, setPost] = useState<SerializedSharkPost>({
         id: BigInt(0),
         title: '',
+        images: [],
         description: '',
         user_id: '',
         created_at: new Date().toISOString(),
@@ -36,7 +38,7 @@ function Post() {
     /**
      * Fetches a post from the backend server.
      */
-    const fetchPost: () => Promise<Result<SharkPost, never>> = useCallback(async () => {
+    const fetchPost: () => Promise<Result<SerializedSharkPost, never>> = useCallback(async () => {
         async function fetchPostCall() {
             const resp = await fetch(
                 `${import.meta.env.VITE_BACKEND_SCHEMA}://${
@@ -45,7 +47,7 @@ function Post() {
             )
             return resp.json()
         }
-        return Result((await fetchPostCall()) as SharkPost)
+        return Result((await fetchPostCall()) as SerializedSharkPost)
     }, [id])
 
     useEffectOnce(() => {
@@ -74,13 +76,11 @@ function Post() {
 
     return (
         <div className="bg-main flex h-full max-h-screen w-full flex-col overflow-auto">
-            <div
-                className="relative h-3/5 min-h-[25rem] w-full shrink-0 bg-white bg-cover bg-center bg-no-repeat text-zinc-900 shadow-xl shadow-black/20 transition-[height] dark:bg-zinc-900 dark:text-white sm:h-3/5 sm:min-h-[35rem] md:h-1/2"
-                style={{ backgroundImage: `url(${''})` }}
-            >
+            <div className="relative h-3/5 min-h-[25rem] w-full shrink-0 bg-white bg-cover bg-center bg-no-repeat text-zinc-900 shadow-xl shadow-black/20 transition-[height] dark:bg-zinc-900 dark:text-white sm:h-3/5 sm:min-h-[35rem] md:h-1/2">
+                <PostImage skeleton={false} link={false} item={post} className="h-full w-full" />
                 <div className="pointer-events-none absolute h-0 w-0 -translate-x-1/2 -translate-y-1/2 bg-radial-dot p-32" />
                 <div
-                    className="inline-flex p-2 text-white drop-shadow"
+                    className="absolute left-0 top-0 inline-flex p-2 text-white drop-shadow"
                     onClick={() => history.back()}
                 >
                     <IoMdArrowRoundBack className="text-4xl font-bold drop-shadow" />

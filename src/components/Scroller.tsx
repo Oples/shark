@@ -1,22 +1,24 @@
 import { useCallback, useState } from 'react'
 import InfiniteScroll from 'react-infinite-scroller'
 import { useEffectOnce } from 'react-use'
-import { SharkPost } from '../../shark_back/entity/bindings/SharkPost'
+import { SerializedSharkPost } from '../../shark_back/entity/bindings/SerializedSharkPost'
 import PostImage from './PostImage'
 
 interface ScrollerProps {
     parentRef?: React.RefObject<HTMLElement>
 }
 
+export type ScrollerSharkPost = SerializedSharkPost & { horizontal?: boolean }
+
 /**
- * Retrieves a range of SharkPost items from the backend.
+ * Retrieves a range of SerializedSharkPost items from the backend.
  *
  * @param {number} from - The starting index of the range.
  * @param {number} to - The ending index of the range.
- * @return {Promise<SharkPost[]>} - A promise that resolves to an array of SharkPost items.
+ * @return {Promise<ScrollerSharkPost[]>} - A promise that resolves to an array of SerializedSharkPost items.
  */
 function Scroller({ parentRef, ...props }: ScrollerProps) {
-    const [items, setItems] = useState([] as SharkPost[])
+    const [items, setItems] = useState([] as ScrollerSharkPost[])
     const step = 20
     const [from, setFrom] = useState(0)
     const [to, setTo] = useState(step)
@@ -25,13 +27,13 @@ function Scroller({ parentRef, ...props }: ScrollerProps) {
     const [more, setMore] = useState(false)
 
     /**
-     * Retrieves a range of SharkPost items from the backend.
+     * Retrieves a range of SerializedSharkPost items from the backend.
      *
      * @param {number} from - The starting index of the range.
      * @param {number} to - The ending index of the range.
-     * @return {Promise<SharkPost[]>} - A promise that resolves to an array of SharkPost items.
+     * @return {Promise<SerializedSharkPost[]>} - A promise that resolves to an array of SerializedSharkPost items.
      */
-    const loadItems = async (from: number, to: number): Promise<SharkPost[]> => {
+    const loadItems = async (from: number, to: number): Promise<SerializedSharkPost[]> => {
         try {
             const resp = await fetch(
                 `${import.meta.env.VITE_BACKEND_SCHEMA}://${
@@ -113,7 +115,7 @@ function Scroller({ parentRef, ...props }: ScrollerProps) {
 
     const loader = (
         <div key="loader" className="flex w-full max-w-full px-4 pb-6" {...props}>
-            <PostImage skeleton />
+            <PostImage skeleton className="flex h-56 w-full pr-4 pt-4 sm:h-80" />
         </div>
     )
 
@@ -131,7 +133,14 @@ function Scroller({ parentRef, ...props }: ScrollerProps) {
             <div className="mx-4 flex flex-row flex-wrap">
                 {items.length > 0
                     ? items.map((item, index) => (
-                          <PostImage key={item.id.toString()} item={item} data-index={index} />
+                          <PostImage
+                              key={item.id.toString()}
+                              item={item}
+                              data-index={index}
+                              className={`flex ${
+                                  item?.horizontal === false ? 'w-1/2' : 'w-full'
+                              } h-56 pr-4 pt-4 sm:h-80`}
+                          />
                       ))
                     : null}
             </div>

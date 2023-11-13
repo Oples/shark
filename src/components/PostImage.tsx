@@ -1,12 +1,18 @@
 import { useNavigate } from 'react-router-dom'
-import { SharkPost } from '../../shark_back/entity/bindings/SharkPost'
+import { ScrollerSharkPost } from './Scroller'
 
 interface PostImageParams {
-    item?: SharkPost & { horizontal?: boolean }
+    item?: ScrollerSharkPost
+    link?: boolean
     skeleton?: boolean
 }
 
-function PostImage({ skeleton, item, ...prop }: PostImageParams) {
+function PostImage({
+    skeleton,
+    item,
+    link = true,
+    ...prop
+}: JSX.IntrinsicElements['div'] & PostImageParams) {
     const navigate = useNavigate()
 
     const post = skeleton ? null : item
@@ -17,39 +23,49 @@ function PostImage({ skeleton, item, ...prop }: PostImageParams) {
         : {
               backgroundImage: `url(${
                   post?.images?.[0]
-                      ? import.meta.env.VITE_BACKEND_SCHEMA + '/image/' + post.images?.[0]
-                      : ''
+                      ? `${import.meta.env.VITE_BACKEND_SCHEMA}://${
+                            import.meta.env.VITE_BACKEND_ADDRESS
+                        }/image/${post.images[0]}`
+                      : 'unknown'
               })`,
           }
+
+    const post_image_body = (
+        <div
+            className={`${
+                skeleton ? 'animate-pulse' : ''
+            } h-full w-full bg-cyan-900/80 dark:bg-cyan-400/40`}
+        >
+            <div
+                style={post_image_style}
+                data-post-id={!skeleton ? String(post?.id) : 'post-skeleton'}
+                data-post-title={post?.title}
+                className="m-auto aspect-auto h-full max-h-full w-full bg-cover bg-center bg-no-repeat"
+            />
+        </div>
+    )
 
     return (
         <div
             key={!skeleton ? String(post?.id) : 'post-skeleton'}
-            className={`flex ${
-                post?.horizontal === false ? 'w-1/2' : 'w-full'
-            } h-56 pr-4 pt-4 sm:h-80`}
             data-post-id={!skeleton ? String(post?.id) : 'post-skeleton'}
+            className="flex h-full w-full"
             {...prop}
         >
-            <a
-                target="_blank"
-                rel="noopener"
-                className="h-full w-full overflow-hidden rounded-md shadow-lg shadow-black/30 dark:shadow-black/60"
-                onClick={() => {
-                    if (!skeleton) navigate(post_url, { preventScrollReset: true })
-                }}
-            >
-                <div
-                    className={`${
-                        skeleton ? 'animate-pulse' : ''
-                    } h-full w-full bg-cyan-900/80 dark:bg-cyan-400/40`}
+            {link ? (
+                <a
+                    target="_blank"
+                    rel="noopener"
+                    className="h-full w-full overflow-hidden rounded-md shadow-lg shadow-black/30 dark:shadow-black/60"
+                    onClick={() => {
+                        if (!skeleton) navigate(post_url, { preventScrollReset: true })
+                    }}
                 >
-                    <div
-                        style={post_image_style}
-                        className="m-auto aspect-auto h-full max-h-full w-full bg-cover bg-center bg-no-repeat"
-                    />
-                </div>
-            </a>
+                    {post_image_body}
+                </a>
+            ) : (
+                post_image_body
+            )}
         </div>
     )
 }

@@ -10,7 +10,10 @@ use axum::{
 };
 use bytes::Bytes;
 use chrono::Utc;
-use entity::{shark_comment, shark_image, shark_post};
+use entity::{
+    shark_comment, shark_image,
+    shark_post::{self, SerializedModel},
+};
 use migration::Migrator;
 use migration::MigratorTrait;
 use sea_orm::{
@@ -32,7 +35,7 @@ const IMAGES_PATH: &str = "./images";
 async fn get_posts(
     State(state): State<AppState>,
     param: Option<Path<(i64, u64)>>,
-) -> Json<Vec<shark_post::Model>> {
+) -> Json<Vec<shark_post::SerializedModel>> {
     let (id, size) = match param {
         Some(Path(params)) => params,
         None => (0, 10),
@@ -46,7 +49,63 @@ async fn get_posts(
         .await
         .expect("Pagination error while fetching posts");
 
-    Json(posts.unwrap_or(vec![]))
+    if posts.is_none() || posts.to_owned().unwrap().len() == 0 {
+        return Json(vec![]);
+    }
+
+    // Get images
+    let images = shark_image::Entity::find()
+        .filter(
+            shark_image::Column::PostId.is_in(
+                posts
+                    .to_owned()
+                    .unwrap()
+                    .iter()
+                    .map(|p| p.id)
+                    .collect::<Vec<i64>>(),
+            ),
+        )
+        .all(&state.db)
+        .await
+        .unwrap();
+
+    let mut posts_json: Vec<shark_post::SerializedModel> = vec![];
+    posts.to_owned().unwrap().into_iter().for_each(|post| {
+        let post_json = serde_json::to_value(&post)
+            .unwrap()
+            .as_object()
+            .unwrap()
+            .clone();
+        // add images to post
+        let mut images_json = vec![];
+        for image in images.clone() {
+            if image.post_id == post.id {
+                images_json.push(image.id);
+            }
+        }
+        posts_json.push(SerializedModel {
+            id: post_json["id"].as_i64().unwrap(),
+            user_id: post_json["user_id"].as_str().unwrap().to_string(),
+            title: post_json["title"].as_str().unwrap().to_string(),
+            images: images_json,
+            location_latitude: match post_json.get("location_latitude") {
+                Some(lat) => lat.as_f64(),
+                None => None,
+            },
+            location_longitude: match post_json.get("location_longitude") {
+                Some(lon) => lon.as_f64(),
+                None => None,
+            },
+            description: post_json["description"].as_str().unwrap().to_string(),
+            created_at: post_json["created_at"].as_str().unwrap().to_string(),
+            updated_at: match post_json["updated_at"].as_str() {
+                Some(updated_at) => Some(updated_at.to_string()),
+                None => None,
+            },
+        });
+    });
+
+    Json(posts_json)
 }
 
 async fn get_post(State(state): State<AppState>, Path(id): Path<i64>) -> impl IntoResponse {
