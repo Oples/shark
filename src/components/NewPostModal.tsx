@@ -3,7 +3,6 @@ import { useEffect, useRef, useState } from 'react'
 import ReactDOM from 'react-dom'
 import { IoMdClose, IoMdCloudUpload } from 'react-icons/io'
 import { MdEdit } from 'react-icons/md'
-import { useClickAway } from 'react-use'
 import { NewSharkPost } from '../../shark_back/entity/bindings/NewSharkPost'
 
 export interface NewPostModalProps {
@@ -20,9 +19,10 @@ function NewPostModal({ opened = false, image = None, onClose = () => {} }: NewP
     const [description, setDescription] = useState('')
     const changePictureRef = useRef<HTMLInputElement>(null)
     const modalRef = useRef<HTMLDivElement>(null)
-    useClickAway(modalRef, () => {
-        onClose()
-    })
+
+    // useClickAway(modalRef, () => {
+    //     onClose()
+    // })
 
     useEffect(() => {
         if (image.isSome()) {

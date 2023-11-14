@@ -4,7 +4,7 @@ import { Result } from 'oxide.ts'
 import { useCallback, useState } from 'react'
 import { IoMdArrowRoundBack } from 'react-icons/io'
 import { MapContainer, Marker, TileLayer } from 'react-leaflet'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { useEffectOnce } from 'react-use'
 import { SerializedSharkPost } from '../../shark_back/entity/bindings/SerializedSharkPost'
 import PostImage from '../components/PostImage'
@@ -24,6 +24,7 @@ function Section({ title, children, ...props }: { title: string; children: React
 
 function Post() {
     const { id } = useParams()
+    const navigate = useNavigate()
     const [post, setPost] = useState<SerializedSharkPost>({
         id: BigInt(0),
         title: '',
@@ -81,16 +82,16 @@ function Post() {
                 <div className="pointer-events-none absolute h-0 w-0 -translate-x-1/2 -translate-y-1/2 bg-radial-dot p-32" />
                 <div
                     className="absolute left-0 top-0 inline-flex p-2 text-white drop-shadow"
-                    onClick={() => history.back()}
+                    onClick={() => navigate('/')}
                 >
                     <IoMdArrowRoundBack className="text-4xl font-bold drop-shadow" />
                 </div>
             </div>
-            <div className="flex-1 bg-cyan-500/20 backdrop-brightness-125 backdrop-contrast-75 dark:bg-zinc-950/80 dark:backdrop-brightness-50 dark:backdrop-contrast-100 dark:backdrop-saturate-50">
+            <div className="flex-1 bg-cyan-500/20 dark:bg-zinc-950/90">
                 <div className="flex w-full flex-col gap-4 p-4">
                     <div className="mx-auto flex w-full max-w-screen-md flex-col gap-6 py-4">
                         <Section title={`${post?.title}`}>
-                            <div className="flex aspect-video h-full w-full items-center justify-center bg-white/80 text-zinc-900 backdrop-blur-[4px] dark:bg-zinc-900/90 dark:text-white">
+                            <div className="flex aspect-video h-full w-full items-center justify-center bg-white/90 text-zinc-900 dark:bg-zinc-900/90 dark:text-white lg:backdrop-blur-[4px]">
                                 {post?.location_latitude && post?.location_longitude ? (
                                     <MapContainer
                                         center={postLocation}
@@ -115,7 +116,7 @@ function Post() {
                             </div>
                         </Section>
                         <Section title="Description">
-                            <div className="flex aspect-video h-full w-full items-center justify-center bg-white/80 text-zinc-900 backdrop-blur-[4px] dark:bg-zinc-900/90 dark:text-white">
+                            <div className="flex aspect-video h-full w-full items-center justify-center bg-white/90 text-zinc-900 dark:bg-zinc-900/90 dark:text-white lg:backdrop-blur-[4px]">
                                 {post?.description}
                             </div>
                         </Section>
