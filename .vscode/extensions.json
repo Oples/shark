@@ -5,6 +5,6 @@
         "esbenp.prettier-vscode",
         "bradlc.vscode-tailwindcss",
         "formulahendry.auto-close-tag",
-        "christian-kohler.npm-intellisense"
+        "vadimcn.vscode-lldb"
     ]
 }
